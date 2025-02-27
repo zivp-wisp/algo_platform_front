@@ -185,11 +185,6 @@ const PropertiesWindow = ({ cameraConnected, handleCheckCamera }) => {
             <Typography variant="body2">{Math.round(progress)}%</Typography>
           </Stack>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleStopAlgorithm} color="error">
-            Stop
-          </Button>
-        </DialogActions>
       </Dialog>
     </Paper>
   );
