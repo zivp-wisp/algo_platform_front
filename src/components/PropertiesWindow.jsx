@@ -33,6 +33,22 @@ const PropertiesWindow = ({ cameraConnected, handleCheckCamera }) => {
   const [dialogOpen, setDialogOpen] = useState(false); // Dialog state
   const [progress, setProgress] = useState(0); // Progress percentage
   const [totalIterations, setTotalIterations] = useState(1); // Total iterations
+  const [configFileNames, setConfigFileNames] = useState([]);
+  const [selectedConfigFile, setSelectedConfigFile] = useState("");
+
+  useEffect(() => {
+    const fetchConfigFiles = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/get_config_files_names"
+        );
+        setConfigFileNames(response.data.config_files || []);
+      } catch (error) {
+        console.error("Error fetching config files:", error);
+      }
+    };
+    fetchConfigFiles();
+  }, []);
 
   // Update the selected algorithm and reset params
   const handleAlgorithmChange = (event) => {
@@ -96,8 +112,10 @@ const PropertiesWindow = ({ cameraConnected, handleCheckCamera }) => {
       // Send algorithm and params to backend
       const response = await axios.post("http://localhost:5000/start_script", {
         algo: algorithmChosen,
+        configFile: selectedConfigFile,
         params: paramsValues,
       });
+
       console.log("Algorithm started:", response.data);
     } catch (error) {
       console.error("Error starting algorithm:", error);
@@ -129,6 +147,18 @@ const PropertiesWindow = ({ cameraConnected, handleCheckCamera }) => {
     >
       {/* Algorithm Selection */}
       <Stack spacing={2}>
+        <TextField
+          select
+          label="Configuration File"
+          value={selectedConfigFile}
+          onChange={(e) => setSelectedConfigFile(e.target.value)}
+        >
+          {configFileNames.map((file, index) => (
+            <MenuItem key={index} value={file}>
+              {file}
+            </MenuItem>
+          ))}
+        </TextField>
         <TextField
           id="algorithm-select"
           select
